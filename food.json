@@ -1,0 +1,36 @@
+[
+    {
+        "id": 1,
+        "title": "rice",
+        "origin": "indian",
+        "price": 200,
+        "category": "lunch"
+               
+    },
+
+    {
+        "id": 2,
+        "title": "daal",
+        "origin": "indian",
+        "price": 100,
+        "category": "lunch"
+               
+    },
+    {
+        "id": 3,
+        "title": "paneer sabji",
+        "origin": "indian",
+        "price": 200,
+        "category": "lunch"
+               
+    },
+
+    {
+        "id": 4,
+        "title": "puri sabji",
+        "origin": "indian",
+        "price": 50,
+        "category": "break fast"
+               
+    }
+]

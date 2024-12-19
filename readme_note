@@ -1,0 +1,223 @@
+import { request } from "http"
+
+1. Download and install vscode editor
+2. downlad and install node js. check the version: cmd--> $node --version
+3. create a folder and open the folder in vscode editor
+4. open the terminal in vscode editor
+5. terminal--> npm install nodemon
+6. terminal--> npm install init (create package.json)
+7. terminal--> npm install mongoose (for db connection)
+8. terminal--> npm install express (for API creation)
+
+==================================
+
+9. call express module
+   const express = require('express'); 
+10.create an express object.
+   const app = express(); 
+11.using express object we can create server, internally uses http module
+app.listen(3040, ()=>{
+    console.log("Server is up and running");
+})
+
+====================================
+
+12. create a middleware. It will give Security .
+function middleman(req,res,next){
+    if(req.params.id<10)
+        {
+            console.log("main endpoint")
+			res.send({message: "You are blocked"})
+
+        }
+    else{
+        next() //means just it will forward to main function that is testing
+    }
+}
+
+13. GET request
+app.get("/users/:id",middleman, (req,res)=>{
+    console.log(req.params.id);
+    res.send({message:"Users response"}); 
+})
+
+
+14. use middleware globally  
+app.use(middleman);
+
+
+15. Use express as middleware
+// give body : req.body
+app.use(express.json()) ; 
+
+
+============================================
+
+
+16. end point for GET request
+app.get("/foods",(req,res)=>{
+    console.log("Get request incoming");
+    res.send({message:"Get request success"}); 
+})
+
+============================================
+
+
+17. endpoint for post request
+app.post("/foods",(req,res)=>{
+    res.send({message:"Post working"})
+})
+
+18.
+app.post("/products",(req,res)=>{
+    console.log(req.body);
+    res.send({message:"Post working"})
+})
+
+
+
+=======================================
+
+19. DELETE request
+app.delete("/productss/:id",(req,res)=>{
+    console.log(req.param.id);
+    res.send({message:"Deleted successfully"})
+})
+
+
+===========================================
+
+20. PUT request
+app.put("/productss/:id",(req,res)=>{
+    console.log(req.param.id);
+    console.log(req.body);
+    res.send({message:"Put successfully"})
+})
+
+
+
+===========================================
+
+21. call mongoose to connect to the database
+   const mongoose = require('mongoose');
+
+22.connect to the database
+mongoose.connect("mongodb://localhost:27017/mongotuts")
+.then(()=>{
+   console.log("Database connection successful")
+})
+.catch((err)=>{
+   console.log(err)
+})
+
+23. create schema with validation
+const productSchema = mongoose.Schema({
+    name: {
+        type:String,
+        require:[true,"Name is mandatory"]
+    },
+
+    price: {
+        type:Number, 
+        required:[true, "price is mandatory"],
+        min:1
+    },
+
+   quantity: {
+        type:Number,
+        required:[true, "quantity is mandatory"],
+    },
+
+    category: {
+        type:String,
+        enum:["Clothing","Electronics","Household"]
+    }
+    
+    
+}, {timestamp: true})
+
+24. model creation
+const prodctModel = mongoose.model("products", productSchema);
+
+25. POST method - Add data to products in DB
+app.post("/products",(req,res)=>{
+    let product= req.body;
+    prodctModel.create(product)
+    .then((document)=>{
+        res.send({data:document, message:"product created"})
+    })
+    .catch((err)=>{
+        console.log(err);
+        res.send({message:"some problem"})
+    })
+   })
+
+
+26. Get request
+     //http://localhost:8000/products
+     app.get("/products",(req,res)=>{
+        //console.log("Get request incoming");
+        //res.send({message:"Get request success"}); 
+        prodctModel.find()
+        .then((product)=>{
+            res.send(product);
+        })
+        .catch((err)=>{
+            console.log(err);
+            res.send({message:"some problem"})
+        })
+    })
+
+
+//11. Get a single product using id
+//http://localhost:8000/products/id
+//http://localhost:8000/products/673b20c735d469118c2ef43c
+     app.get("/products/:id",(req,res)=>{
+         prodctModel.findOne({_id:req.params.id})
+        .then((product)=>{
+            res.send(product);
+        })
+        .catch((err)=>{
+            console.log(err);
+            res.send({message:"some problem"})
+        })
+    })
+
+//12.DELETE request
+//http://localhost:8000/products/id
+//http://localhost:8000/products/673b3263c2fc9b61faf42b53
+app.delete("/products/:id",(req,res)=>{
+    //console.log(req.params.id);
+   // res.send({message:"Deleted successfully"})
+   prodctModel.deleteOne({_id:req.params.id})
+   .then((info)=>{
+       res.send({message: "product got deleted"});
+   })
+   .catch((err)=>{
+       console.log(err);
+       res.send({message:"some problem"})
+   }) 
+})
+
+
+//13. PUT request
+app.put("/products/:id",(req,res)=>{
+    //console.log(req.param.id);
+    //console.log(req.body);
+    //res.send({message:"Put successfully"})
+
+    let product = req.body;
+    prodctModel.updateOne({_id:req.params.id}, product)
+    .then((info)=>{
+        res.send({message: "product updaeted"});
+    })
+    .catch((err)=>{
+        console.log(err);
+        res.send({message:"some problem"})
+    }) 
+})
+
+
+
+
+============================================
